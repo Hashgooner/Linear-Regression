@@ -51,32 +51,35 @@ newData <- newsHeadlineData[,3:5]
 str(newData)
 
 newDataSplit <- split(newData, newData$year)
-newDataSplit <- newDataSplit$'2001'
+newDataSplit <- newDataSplit$'2005'
 newDataSplit <- split(newDataSplit, newDataSplit$month)
-newDataSplit <- newDataSplit$'12'
+newDataSplit <- newDataSplit$'1'
 
-text <- newDataSplit$headline_text
-docs <- Corpus(VectorSource(text))
-docs <- tm_map(docs,tolower)
-docs <- tm_map(docs,removePunctuation)
-docs <- tm_map(docs,removeNumbers)
-docs <- tm_map(docs,removeWords,stopwords('english'))
-docs <- tm_map(docs, stripWhitespace)
-inspect(docs[1:5])
+performSentimentAnalysis <- function(newDataSplit){
+  text <- newDataSplit$headline_text
+  docs <- Corpus(VectorSource(text))
+  docs <- tm_map(docs,tolower)
+  docs <- tm_map(docs,removePunctuation)
+  docs <- tm_map(docs,removeNumbers)
+  docs <- tm_map(docs,removeWords,stopwords('english'))
+  docs <- tm_map(docs, stripWhitespace)
+  inspect(docs[1:5])
+  
+  tdm <- TermDocumentMatrix(docs)
+  tdm <- as.matrix(tdm)
+  w <- rowSums(tdm)
+  w <- subset(w,w>=10)
+  barplot(w,las = 2)
+  w <- sort(rowSums(tdm), decreasing = TRUE)
+  set.seed(222)
+  #wordcloud(words = names(w), freq = w, max.words = 100, min.freq = 5)
+  
+  w <- data.frame(names(w),w)
+  colnames(w) <- c('word','freq')
+  wordcloud2(w,shape = 'circle')
 
-tdm <- TermDocumentMatrix(docs)
-tdm <- as.matrix(tdm)
-w <- rowSums(tdm)
-w <- subset(w,w>=10)
-barplot(w,las = 2)
-w <- sort(rowSums(tdm), decreasing = TRUE)
-set.seed(222)
-#wordcloud(words = names(w), freq = w, max.words = 100, min.freq = 5)
-
-w <- data.frame(names(w),w)
-colnames(w) <- c('word','freq')
-wordcloud2(w,shape = 'circle')
-
-s <- get_nrc_sentiment(newDataSplit$headline_text)
-head(s)
-barplot(colSums(s),las=2)
+  s <- get_nrc_sentiment(newDataSplit$headline_text)
+  head(s)
+  barplot(colSums(s),las=2)
+}
+performSentimentAnalysis(newDataSplit = newDataSplit)

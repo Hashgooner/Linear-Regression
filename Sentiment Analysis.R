@@ -11,6 +11,7 @@ library(dplyr)
 library(stringr)
 library(plotly)
 
+#Import the dataset
 newsHeadlineData <- read.csv("C:/Users/harsh/Downloads/india-news-headlines.csv")
 head(newsHeadlineData)
 str(newsHeadlineData)
@@ -46,16 +47,15 @@ barplot(mainCategoryFreq[0:10], las=2, xlab = 'Main Category', ylab = 'Frequency
 barplot(SubmainCategoryFreq[0:10], las=2, xlab = 'Sub Main Category', ylab = 'Frequency', col = 'black',
         main = 'Frequency chart of sub main categories (Top 10)')
 
+newData <- newsHeadlineData[,3:5]
+str(newData)
 
-newsHeadlineData_split <- split(newsHeadlineData, newsHeadlineData$year)
-newsHeadlineData_2001 <- newsHeadlineData_split$'2002'
-newsHeadlineData_2001split <- split(newsHeadlineData_2001, newsHeadlineData_2001$month)
-newsHeadlineData_2001split_1 <- newsHeadlineData_2001split$'1'
+newDataSplit <- split(newData, newData$year)
+newDataSplit <- newDataSplit$'2001'
+newDataSplit <- split(newDataSplit, newDataSplit$month)
+newDataSplit <- newDataSplit$'12'
 
-mainCategoryFreq <- table(newsHeadlineData_2001split_1$mainCategory)
-barplot(mainCategoryFreq, las = 2)
-
-text <- newsHeadlineData_2001split_1$headline_text
+text <- newDataSplit$headline_text
 docs <- Corpus(VectorSource(text))
 docs <- tm_map(docs,tolower)
 docs <- tm_map(docs,removePunctuation)
@@ -67,16 +67,16 @@ inspect(docs[1:5])
 tdm <- TermDocumentMatrix(docs)
 tdm <- as.matrix(tdm)
 w <- rowSums(tdm)
-w <- subset(w,w>=40)
+w <- subset(w,w>=10)
 barplot(w,las = 2)
 w <- sort(rowSums(tdm), decreasing = TRUE)
 set.seed(222)
-wordcloud(words = names(w), freq = w, max.words = 100, min.freq = 5)
+#wordcloud(words = names(w), freq = w, max.words = 100, min.freq = 5)
 
 w <- data.frame(names(w),w)
 colnames(w) <- c('word','freq')
 wordcloud2(w,shape = 'circle')
 
-s <- get_nrc_sentiment(newsHeadlineData_2001split_1$headline_text)
+s <- get_nrc_sentiment(newDataSplit$headline_text)
 head(s)
 barplot(colSums(s),las=2)

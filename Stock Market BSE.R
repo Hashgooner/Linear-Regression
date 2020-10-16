@@ -29,7 +29,7 @@ plot(y = bseData$Low, x=bseData$Date, main = 'Lowest Price of S&P BSE SENSEX', y
 plot(y = bseData$Volume, x=bseData$Date, main = 'Volume of S&P BSE SENSEX', ylab = 'Price', xlab = 'Date')
 fig <- plot_ly(data = bseData, x= bseData$Date, type = 'ohlc', open = bseData$Open, close = bseData$Close, 
                high = bseData$High, low = bseData$Low)
-fig <- fig %>% layout(title = 'Basic OHLC Chart')
+fig <- fig %>% layout(title = 'BSE OHLC Chart')
 fig
 dplyr::mutate(bseData$year <- lubridate::year(bseData$Date))
 dplyr::mutate(bseData$month <- lubridate::month(bseData$Date))

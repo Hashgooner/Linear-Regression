@@ -29,18 +29,12 @@ performSentimentAnalysis <- function(newDataSplit){
   w <- sort(rowSums(tdm), decreasing = TRUE)
   set.seed(222)
   wordcloud(words = names(w), freq = w, max.words = 100, min.freq = 5)
-  
-  callWordCloud(w)
-  
+}
+
+genSent <- function(newDataSplit){
   s <- get_nrc_sentiment(newDataSplit$headline_text)
   head(s)
   barplot(colSums(s),las=2)
-}
-
-callWordCloud <- function(w){
-  w <- data.frame(names(w),w)
-  colnames(w) <- c('word','freq')
-  wordcloud2(w,shape = 'circle')
 }
 
 #Import the dataset
@@ -83,8 +77,9 @@ newData <- newsHeadlineData[,3:5]
 str(newData)
 
 newDataSplit <- split(newData, newData$year)
-newDataSplit <- newDataSplit$'2020'
+newDataSplit <- newDataSplit$'2001'
 newDataSplit <- split(newDataSplit, newDataSplit$month)
-newDataSplit <- newDataSplit$'4'
+newDataSplit <- newDataSplit$'12'
 
 performSentimentAnalysis(newDataSplit = newDataSplit)
+genSent(newDataSplit = newDataSplit)
